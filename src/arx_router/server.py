@@ -236,13 +236,14 @@ def build_app(cfg: Optional[RouterConfig] = None):
     return TokenGuard(raw_app, active_config)
 
 
-try:
-    app = build_app(config)
-except RuntimeError:
-    app = None
+def create_asgi_app():
+    """ASGI application entrypoint for uvicorn."""
+    return build_app()
+
+
+# Default ASGI application instance
+app = build_app()
 
 if __name__ == "__main__":
-    if app is None:
-        app = build_app(config)
     import uvicorn
     uvicorn.run(app, host=config.host, port=config.port)
