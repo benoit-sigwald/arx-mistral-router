@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  arx-mistral-router:
+    build: .
+    container_name: arx-mistral-router
+    restart: always
+    networks:
+      - coolify
+    environment:
+      - PORT=8000
+      - HOST=0.0.0.0
+      - FASTMCP_HOST=0.0.0.0
+      - MISTRAL_API_KEY=${MISTRAL_API_KEY}
+      - MISTRAL_ROUTER_TOKEN=${MISTRAL_ROUTER_TOKEN}
+      - MODEL_EXTRACTION=mistral-small-latest
+      - MODEL_SUMMARIZATION=mistral-small-latest
+      - MODEL_CODE=codestral-latest
+      - MODEL_TESTS=codestral-latest
+      - MODEL_DIFF=codestral-latest
+      - RATE_LIMIT_RPS=1.0
+      - RATE_LIMIT_TPM=60000
+      - MONTHLY_TOKEN_BUDGET=1000000
+      - MAX_CONCURRENT_REQUESTS=2
+      - CACHE_TTL_SECONDS=86400
+      - CACHE_MAX_SIZE=256
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.mistral-strip.stripprefix.prefixes=/mistral"
+      - "traefik.http.routers.mistral-http.entrypoints=http"
+      - "traefik.http.routers.mistral-http.rule=Host(`arx-mcp.duckdns.org`) && PathPrefix(`/mistral`)"
+      - "traefik.http.routers.mistral-http.middlewares=redirect-to-https@file,mistral-strip"
+      - "traefik.http.routers.mistral-https.entrypoints=https"
+      - "traefik.http.routers.mistral-https.rule=Host(`arx-mcp.duckdns.org`) && PathPrefix(`/mistral`)"
+      - "traefik.http.routers.mistral-https.middlewares=mistral-strip"
+      - "traefik.http.routers.mistral-https.tls=true"
+      - "traefik.http.routers.mistral-https.tls.certresolver=letsencrypt"
+      - "traefik.http.services.mistral-https.loadbalancer.server.port=8000"
+
+networks:
+  coolify:
+    external: true
