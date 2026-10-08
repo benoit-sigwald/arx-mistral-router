@@ -1,12 +1,14 @@
-version: '3.8'
-
 services:
   arx-mistral-router:
-    build: .
+    build:
+      context: ..
+      dockerfile: Dockerfile
     container_name: arx-mistral-router
     restart: always
     networks:
       - coolify
+    env_file:
+      - ../.env
     environment:
       - PORT=8000
       - HOST=0.0.0.0
