@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "mistral-router": {
+      "serverUrl": "https://arx-mcp.duckdns.org/mistral/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_MISTRAL_ROUTER_TOKEN_HERE"
+      }
+    }
+  }
+}
